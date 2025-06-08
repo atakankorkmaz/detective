@@ -1,0 +1,195 @@
+        public void locationControl() {
+            Location motelRoom = new Location();
+            System.out.println();
+            Map<String, Runnable> motelOptions = new LinkedHashMap<>();
+            motelOptions.put("Check the TV unit.", () -> {
+                if (!tvUnitChecked) {
+                    System.out.println("You step over to the TV unit — a tired, dusty thing, more furniture than technology at this point. The television itself is old, thick-screened, its black surface blank and faintly scratched, like it hasn’t been used in years.\n" +
+                            "\n" +
+                            "The stand beneath it is cluttered. There’s a shallow drawer with a crooked handle, barely shut. A few items rest on top — a near-empty pill bottle, some crumpled motel notepads, and a disposable lighter that doesn’t look like yours.\n" +
+                            "\n" +
+                            "You hesitate for a moment. You're not sure what you're expecting to find... but something about this spot feels important.\n" +
+                            "\n");
+                    tvUnitChecked=true;
+                }
+                inspectTVUnit();
+            });
+
+            motelOptions.put("Check the coffee table.", () -> {
+                inspectCoffeeTable(); // handled in a separate method
+            });
+
+            motelOptions.put("Check the entrance.", () -> {
+                System.out.println("You approach the door.");
+                inspectDoor();
+                // ...future expansion here
+            });
+            if (mudChecked && coatChecked) {
+                if (pillsChecked) {
+//                    TypeWriter.type("The name lingers. V. Harper. It doesn't spark a memory, but it gives you something to hold onto. Something solid. Your coat is gone. Mud on your shoes. Something happened out there—but the trail is fresh.\n");
+                }
+                else {
+//                    TypeWriter.type("\"You don't even know your own name. But someone took your coat, or you left it behind. Mud on your shoes, blood on your head. There’s a note about Room 6. You have no answers. But the trail hasn’t gone cold.\n");
+                }
+                motelOptions.put("Conclude.", () -> {
+
+                    //Different conclusions player makes will affect some things in the game, and they will
+                    // have a lot of options to pick from here.
+                });
+            }
+
+            motelRoom.setOptions(motelOptions);
+            motelRoom.prompt();  // prompt once here
+        }
+        public void inspectTVUnit(){
+            Location tvUnit = new Location();
+            Map<String, Runnable> tvUnitOptions = new LinkedHashMap<>();
+            tvUnitOptions.put("Check the drawer.", () -> {
+                if (!drawerChecked ) {
+                    System.out.println("The drawer creaks open with hesitation. Inside, motel stationery, a " +
+                            "snapped rubber band, and a pen with no cap. Nothing useful. You feel like you were " +
+                            "looking for something... but you don't know what.");
+                    drawerChecked=true;
+                }
+                else {
+                    System.out.println("Just the same junk. Nothing useful.");
+                }
+
+                inspectTVUnit();
+            });
+            if (!pillsChecked) {
+                tvUnitOptions.put("Check the pills.", () -> {
+                    System.out.println("You pick up the amber bottle on the counter. The label reads:\n  *PAROXETINE — 20mg — Take once daily*" +
+                            "\nPrescribed to: **V. Harper**.\n\nThe name sits uncomfortably in your chest. Familiar. Yet distant. Like a coat you recognize, but aren’t sure ever really fit you." +
+                            "\n\nYou speak aloud, quietly: “Is this who I am?”"
+                    );
+
+                    pillsChecked = true;
+                    inspectTVUnit();
+                });
+            }
+            else if (pillsChecked && !pillsPicked) {
+                tvUnitOptions.put("**NEW INSIGHT** Take the pills.", () -> {
+                    System.out.println("You pocket the amber bottle. The weight of it is small, but oddly grounding. For now, it’s all you have with your name on it.");
+                    pillsPicked=true;
+                    inspectTVUnit();
+
+                });
+            }
+
+            tvUnitOptions.put("Go back.", () -> {
+                System.out.println("You decide to leave the TV unit alone.");
+                locationControl();
+            });
+
+            tvUnit.setOptions(tvUnitOptions);
+            tvUnit.prompt();
+        }
+        public void inspectCoffeeTable() {
+            Location coffeeTable = new Location();
+            Map<String, Runnable> tableOptions = new LinkedHashMap<>();
+            tableOptions.put("Inspect the two empty mugs.", () -> {
+                System.out.println("Two stained mugs sit on the table — cheap motel ceramic. No steam. No smell. Just faint rings at the bottom. You can't recall if you drank from one… or both.");
+                inspectCoffeeTable(); // go back to coffee table menu
+            });
+            tableOptions.put("Read the crumpled note.", () -> {
+                System.out.println("The note reads: \n*Don’t forget Room 6. Midnight.*\n");
+                inspectCoffeeTable(); // go back to coffee table menu
+            });
+            tableOptions.put("Go back.", () -> {
+                locationControl(); // go back to motel room
+            });
+
+            coffeeTable.setOptions(tableOptions);
+            coffeeTable.prompt();
+        }
+        public void inspectDoor() {
+            Location door = new Location();
+            Map<String, Runnable> doorOptions = new LinkedHashMap<>();
+            doorOptions.put("Check the mud on the floor", () -> {
+                System.out.println("Half-dried mud is tracked near the entrance. Not old, but not fresh either. It matches your shoes—but something feels off. If it was raining, where’s your coat?");
+                mudChecked = true;
+                inspectDoor();
+            });
+            if (!coatChecked) {
+                if (mudChecked) {
+                    doorOptions.put("**NEW INSIGHT** Check the coat rack.", () -> {
+                        System.out.println("You eye the coat rack. There's mud on your shoes, but no coat to match it. Did you come here without one? Or did it go missing after?" +
+                                "\nYou should probably ask someone. The front desk might’ve seen something." +
+                                "\n\n**NEW OBJECTIVE: Ask someone about your missing coat.**\n");
+                        coatChecked = true;
+                        inspectDoor();
+                    });
+                }
+                else {
+                    doorOptions.put("Check the coat rack", () -> {
+                        System.out.println("An empty rack. Just a bent wire hook and dust. It tells you nothing.");
+                        inspectDoor();
+
+                    });
+                }
+            }
+            doorOptions.put("Go back", () -> {
+                locationControl();
+            });
+
+            door.setOptions(doorOptions);
+            door.prompt();
+
+        }
+        public void conclude(){
+            System.out.println("Are you sure you want to conclude this scene?");
+            System.out.println("[ 1 ] Yes");
+            System.out.println("[ 2 ] No");
+            switch (Essentials.getInput("12")){
+                case "1":
+                    System.out.println("Time to move on.");
+//                    TypeWriter.type("\n __________Tutorial__________\n" +
+//                        "Now you are concluding a scene. Think carefully, what you've been through so far." +
+//                        " Why you are thinking what you're thinking and what to choose. There is no right or wrong answers, just //something" +
+//                        "" +
+//                        "\n__________________________");
+                    break;
+                case "2":
+                    System.out.println("You are not so ready to end your inspection.");
+                    locationControl();
+                    break;
+
+            }
+            Location conclusion = new Location();
+            Map<String, Runnable> conclusionOptions = new LinkedHashMap<>();
+            conclusionOptions.put("I was attacked. Maybe robbed. I must've run here to hide—but from who? Is this place some kind of shelter?", () -> {
+                character.setSpeed(1);
+            });
+            conclusionOptions.put("Was I having an affair? Is that what the note was about? Then why this dump of a motel... None of it adds up.", () -> {
+                character.setCharisma(1);
+            });
+            conclusionOptions.put("Whatever this is, I need a doctor. Why haven't I thought of that sooner? Something’s wrong with my head.", () -> {
+                character.setCoordination(1);
+            });
+            conclusionOptions.put("Something isn’t right. I need to find my belongings—and whoever left that note. Someone out there knows who I am.", () -> {
+                character.setPerception(1);
+            });
+            conclusionOptions.put("The scene is a mess, but your reaction to it isn’t. Every move—checking the wound, scanning the floor, noticing the note—it feels procedural. Like muscle memory. Like you’ve done this before. Like you were... investigating.", () -> {
+                character.setPerception(1);
+                character.setCoordination(1);
+            });
+            conclusionOptions.put("Okay, maybe this is just a hangover. A really dramatic, head-wound-level hangover.", () -> {
+                character.setCharisma(1); // deflective
+            });
+            conclusionOptions.put("Maybe I hit my head and lost my memory. That’s how it works in the movies, right? Just need to wait and it’ll all come back.", () -> {
+                character.setCoordination(1); // naïvely optimistic
+            });
+            conclusionOptions.put("What if I was experimented on? Wiped. Reprogrammed. This room... maybe it's not even real.", () -> {
+                character.setPerception(1); // sharp but misapplied
+            });
+            conclusionOptions.put("None of this makes sense. No wild theories. I just need to move forward, see what this is all about.", () -> {
+                character.setPerception(1);
+                character.setCoordination(1);
+            });
+            conclusion.setOptions(conclusionOptions);
+            conclusion.prompt();
+            System.out.println("You leave the room.");
+
+
+        }
