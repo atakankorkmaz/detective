@@ -38,15 +38,19 @@ public class Essentials{
                 new Label("Inventory"),
                 new Label("Pills")
         );
-        HBox centerContent = new HBox(10, inventoryPane);
-
+        // Separator to visually divide the inventory from the main content
         divider.setPrefWidth(2);            // thickness
-        divider.setStyle("-fx-background-color: #666;");  //
-        centerContent.setAlignment(Pos.CENTER);
+        divider.setStyle("-fx-background-color: #666;");  // color
 
+        // Container holds the divider and the inventory panel
+        HBox centerContent = new HBox(divider, inventoryPane);
+        centerContent.setSpacing(10);
+        centerContent.setAlignment(Pos.CENTER_LEFT);
 
         inventoryPane.getStyleClass().add("my-label");
-        Main.root.setRight(inventoryPane);
+
+        // Place the inventory with the divider on the right side
+        Main.root.setRight(centerContent);
     }
     public static Button addButton(String buttonText){
         Button button = new Button(buttonText);
